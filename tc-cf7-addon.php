@@ -91,6 +91,7 @@ class TC_CF7_Addon {
 		
 		include_once( 'tc-cf7-addon-functions.php' );
 		include_once( TC_CF7_ADDON_PLUGIN_DIR . '/includes/tc-cf7-addon-validation.php' );
+		include_once( TC_CF7_ADDON_PLUGIN_DIR . '/includes/tc-cf7-addon-extra-features.php' );
 
 		// Activation - works with symlinks
 		register_activation_hook( basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ), array( $this, 'activation' ) );

@@ -76,11 +76,6 @@ class TC_CF7_Addon_Validation extends WPCF7_Validation{
 			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : 'The '. $tag->name .' field is required.';
 			$pattern = isset($arr_values[$tag->name]['validation-pattern']) ? $arr_values[$tag->name]['validation-pattern'] : '';
 
-			echo '<pre>';
-			print_r($pattern);
-			echo '</pre>' . __FILE__ . ' ( Line Number ' . __LINE__ . ')';
-			die;
-
 			if( !empty($pattern) && !preg_match($pattern, $value) )
 			{
 				$result->invalidate( $tag, $message );
