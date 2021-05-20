@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * TC_CF7_Addon_Validation class.
  */
-class TC_CF7_Addon_Validation extends WPCF7_Validation{
+class TC_CF7_Addon_Validation {
 
 	/**
 	 * Constructor.
