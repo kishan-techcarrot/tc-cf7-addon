@@ -211,6 +211,39 @@ function email_log_thickbox_model_view()
                     <td style="padding: 5px;"><?php _e( 'Subject', 'tc-cf7-addon' ); ?>:</td>
                     <td style="padding: 5px;"><?php echo esc_html( $log->email_subject ); ?></td>
                 </tr>
+                <tr style="background: #eee;">
+                    <td style="padding: 5px;"><?php _e( 'Attachments', 'tc-cf7-addon' ); ?>:</td>
+
+                    <?php if(!empty($log->email_attachments)) : ?>
+                        <td style="padding: 5px;">
+                        <?php $email_attachments = json_decode($log->email_attachments); ?>
+
+                        <?php if(!empty($email_attachments)) : ?>
+                            <?php foreach($email_attachments as $field_name => $attachments) : ?>
+
+                                <?php if(!empty($attachments)) : ?>
+                                    <p>
+                                        <b><?php echo $field_name; ?></b> :: 
+                                        <?php foreach($attachments as $attachment) : ?>
+                                            <a target="_blank" href="<?php echo $attachment; ?>"><span class="dashicons dashicons-media-document"></span></a>
+                                        <?php endforeach; ?>
+                                    </p>
+
+                                <?php else : ?>
+                                    -
+                                <?php endif; ?>
+
+                            <?php endforeach; ?>
+
+                        <?php else : ?>
+                            -
+                        <?php endif; ?>
+                        </td>
+
+                    <?php else : ?>
+                        <td style="padding: 5px;">-</td>
+                    <?php endif; ?>
+                </tr>
             </table>
 
             <h2 class="nav-tab-wrapper">

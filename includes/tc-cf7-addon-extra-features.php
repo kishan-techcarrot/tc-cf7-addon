@@ -18,6 +18,7 @@ class TC_CF7_Addon_Extra_Features {
 
 	private $cf7_id = '';
 	private $last_inserted_id = '';
+	private $cf7_attachments = [];
 
 	/**
 	 * Constructor.
@@ -28,7 +29,8 @@ class TC_CF7_Addon_Extra_Features {
 
 		add_action('wpcf7_before_send_mail', [$this, 'tc_cf7_addon_before_send_mail'], 20);
 
-		add_filter('pre_wp_mail', [$this, 'tc_cf7_addon_save_email_log'], 10, 2);
+		//add_filter('pre_wp_mail', [$this, 'tc_cf7_addon_save_email_log'], 10, 2);
+		add_filter('wp_mail', [$this, 'tc_cf7_addon_save_email_log'], 10);
 
 		add_action( 'wp_mail_failed', array( $this, 'tc_cf7_addon_update_mail_status' ) );
 	}
@@ -81,7 +83,7 @@ class TC_CF7_Addon_Extra_Features {
     	{
     		$data 		= $form->get_posted_data();
 	        $arrFiles   = $form->uploaded_files();
-	        
+
 	        foreach ($arrFiles as $file_key => $files) 
 	        {
 	        	unset($data[$file_key]);
@@ -93,6 +95,7 @@ class TC_CF7_Addon_Extra_Features {
 	        			copy($file, $tc_cf7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
 
 	        			$data[$file_key][] = $tc_cf7_dirurl.'/'.$time_now.'-'.$file_key.'-'.basename($file);
+	        			$this->cf7_attachments[$file_key][] = $tc_cf7_dirurl.'/'.$time_now.'-'.$file_key.'-'.basename($file);
 	        		}
 	        	}
 	        	else
@@ -100,6 +103,7 @@ class TC_CF7_Addon_Extra_Features {
 	        		copy($file, $tc_cf7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($files));
 
 	        		$data[$file_key][] = $tc_cf7_dirurl.'/'.$time_now.'-'.$file_key.'-'.basename($files);
+	        		$this->cf7_attachments[$file_key][] = $tc_cf7_dirurl.'/'.$time_now.'-'.$file_key.'-'.basename($files);
 	        	}
 	        }
 
@@ -107,17 +111,12 @@ class TC_CF7_Addon_Extra_Features {
 
 	        foreach ($data as $key => $value) 
 	        {
-        		$tmpValue = $value;
-
-                if ( ! is_array($value) )
+        		if( is_array($value) && !empty($value) )
                 {
-                    $bl   = array('\"',"\'",'/','\\','"',"'");
-                    $wl   = array('&quot;','&#039;','&#047;', '&#092;','&quot;','&#039;');
-
-                    $tmpValue = str_replace($bl, $wl, $tmpValue );
+                	$value = implode(',', $value);
                 }
 
-                $params[$key] = $tmpValue;
+                $params[$key] = $value;
 	        }
 
 	        if(!empty($params))
@@ -146,7 +145,8 @@ class TC_CF7_Addon_Extra_Features {
     	}
 	}
 
-	public function tc_cf7_addon_save_email_log($return, $atts)
+	//public function tc_cf7_addon_save_email_log($return, $atts)
+	public function tc_cf7_addon_save_email_log($atts)
 	{
 		global $wpdb;
 
@@ -166,7 +166,7 @@ class TC_CF7_Addon_Extra_Features {
 			$logs['email_subject'] = $atts['subject'];
 			$logs['email_message'] = $atts['message'];
 			$logs['email_headers'] = $atts['headers'];
-			$logs['email_attachments'] = is_array($atts['attachments']) && !empty($atts['attachments']) ? json_encode($atts['attachments']) : '';
+			$logs['email_attachments'] = is_array($this->cf7_attachments) && !empty($this->cf7_attachments) ? json_encode($this->cf7_attachments) : '';
 			$logs['ip_address'] = $_SERVER['REMOTE_ADDR'];
 			$logs['is_sent'] = 1;
 			$logs['sent_date'] = current_time('Y-m-d H:i:s');
@@ -176,7 +176,7 @@ class TC_CF7_Addon_Extra_Features {
 			$this->last_inserted_id = $wpdb->insert_id;
 		}
 
-		return $return;
+		return $atts;
 	}
 
 	public function tc_cf7_addon_update_mail_status($wp_errors)
