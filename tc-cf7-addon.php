@@ -63,8 +63,10 @@ class TC_CF7_Addon {
 	 * @see TC_CF7_Addon()
 	 * @return self Main instance.
 	 */
-	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
+	public static function instance() 
+	{
+		if ( is_null( self::$_instance ) ) 
+		{
 			self::$_instance = new self();
 		}
 		return self::$_instance;
@@ -106,8 +108,8 @@ class TC_CF7_Addon {
 	/**
 	 * Called on plugin activation
 	 */
-	public function activation() {
-
+	public function activation() 
+	{
 		global $wpdb;
 
 		flush_rewrite_rules();
@@ -116,9 +118,63 @@ class TC_CF7_Addon {
 	/**
 	 * Called on plugin deactivation
 	 */
-	public function deactivation() {
-
+	public function deactivation() 
+	{
 		global $wpdb;
+
+		$wpdb->hide_errors();
+
+		$collate = '';
+
+		if ( $wpdb->has_cap( 'collation' ) ) {
+			if ( ! empty($wpdb->charset ) ) {
+				$collate .= "DEFAULT CHARACTER SET $wpdb->charset";
+			}
+			if ( ! empty($wpdb->collate ) ) {
+				$collate .= " COLLATE $wpdb->collate";
+			}
+		}
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		$tc_cf7_addon_form_data = "CREATE TABLE ". $wpdb->prefix . "tc_cf7_addon_form_data (
+				id bigint(20) unsigned NOT NULL auto_increment,
+				cf7_id bigint(20) unsigned NOT NULL default '0',
+				record_id varchar(255) default NULL,
+				field_name varchar(255) default NULL,
+				field_value longtext,
+				PRIMARY KEY (id)
+			) $collate;";
+
+		$tc_cf7_addon_email_log = "CREATE TABLE ". $wpdb->prefix . "tc_cf7_addon_email_log (
+				id bigint(20) unsigned NOT NULL auto_increment,
+				cf7_id bigint(20) unsigned NOT NULL default '0',
+				email_to varchar(255) default NULL,
+				email_subject varchar(255) default NULL,
+				email_message longtext,
+				email_headers longtext,
+				email_attachments varchar(1000) default NULL,
+				ip_address varchar(20) default NULL,
+				is_sent tinyint(1) DEFAULT NULL,
+				error_message longtext,
+				sent_date datetime NOT NULL,
+				PRIMARY KEY (id)
+			) $collate;";
+
+		dbDelta( $tc_cf7_addon_form_data );
+		dbDelta( $tc_cf7_addon_email_log );
+
+		$upload_dir    = wp_upload_dir();
+	    $cfdb7_dirname = $upload_dir['basedir'].'/tc_cf7_uploads';
+	    if ( ! file_exists( $cfdb7_dirname ) ) 
+	    {
+	        wp_mkdir_p( $cfdb7_dirname );
+	        $fp = fopen( $cfdb7_dirname.'/index.php', 'w');
+	        fwrite($fp, "<?php \n\t // Silence is golden.");
+	        fclose( $fp );
+	    }
+
+		update_option( 'tc_cf7_addon_version', TC_CF7_ADDON_VERSION );
 
 		flush_rewrite_rules();
 	}
@@ -126,7 +182,8 @@ class TC_CF7_Addon {
 	/**
 	 * Handle Updates
 	 */
-	public function updater() {
+	public function updater() 
+	{
 		if ( version_compare( TC_CF7_ADDON_VERSION, get_option( 'tc_cf7_addon_version' ), '>' ) ) {
 
 			update_option( 'tc_cf7_addon_version', TC_CF7_ADDON_VERSION );
@@ -138,8 +195,8 @@ class TC_CF7_Addon {
 	/**
 	 * Localisation
 	 */
-	public function load_plugin_textdomain() {
-
+	public function load_plugin_textdomain() 
+	{
 		$domain = 'tc-cf7-addon';       
 
         $locale = apply_filters('plugin_locale', get_locale(), $domain);
@@ -152,8 +209,9 @@ class TC_CF7_Addon {
 	/**
 	 * Register and enqueue scripts and css
 	 */
-	public function frontend_scripts() {
-
+	public function frontend_scripts() 
+	{
+		
 	}
 
 }

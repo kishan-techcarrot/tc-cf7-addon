@@ -34,7 +34,7 @@ class TC_CF7_Addon_Validation {
 		add_filter( 'wpcf7_validate_radio*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
 		add_filter( 'wpcf7_validate_acceptance*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
 		add_filter( 'wpcf7_validate_quiz*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
-		add_filter( 'wpcf7_validate_file*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
+		//add_filter( 'wpcf7_validate_file*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
 
 		add_filter( 'wpcf7_validate', [$this, 'tc_cf7_addon_validate_message'], 20, 2 );
 	}
@@ -69,16 +69,19 @@ class TC_CF7_Addon_Validation {
 
 		foreach ($tags as $tag) 
 		{
-			$value = isset( $_POST[$tag->name] )
-			? trim( wp_unslash( strtr( (string) $_POST[$tag->name], "\n", " " ) ) )
-			: '';
-
-			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : 'The '. $tag->name .' field is required.';
-			$pattern = isset($arr_values[$tag->name]['validation-pattern']) ? $arr_values[$tag->name]['validation-pattern'] : '';
-
-			if( !empty($pattern) && !preg_match($pattern, $value) )
+			if( isset($arr_values[$tag->name]['validation-pattern']) && !empty($arr_values[$tag->name]['validation-pattern']) )
 			{
-				$result->invalidate( $tag, $message );
+				$value = isset( $_POST[$tag->name] )
+				? trim( wp_unslash( strtr( (string) $_POST[$tag->name], "\n", " " ) ) )
+				: '';
+
+				$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : 'The '. $tag->name .' field is required.';
+				$pattern = isset($arr_values[$tag->name]['validation-pattern']) ? $arr_values[$tag->name]['validation-pattern'] : '';
+
+				if( !empty($pattern) && !preg_match($pattern, $value) )
+				{
+					$result->invalidate( $tag, $message );
+				}
 			}
 		}
 
