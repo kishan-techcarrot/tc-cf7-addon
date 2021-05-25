@@ -212,6 +212,10 @@ function email_log_thickbox_model_view()
                     <td style="padding: 5px;"><?php echo esc_html( $log->email_subject ); ?></td>
                 </tr>
                 <tr style="background: #eee;">
+                    <td style="padding: 5px;"><?php _e( 'Header', 'tc-cf7-addon' ); ?>:</td>
+                    <td style="padding: 5px;"><pre class="tabs_text-pre"><?php echo esc_textarea( $log->email_headers ); ?></pre></td>
+                </tr>
+                <tr style="background: #eee;">
                     <td style="padding: 5px;"><?php _e( 'Attachments', 'tc-cf7-addon' ); ?>:</td>
 
                     <?php if(!empty($log->email_attachments)) : ?>
