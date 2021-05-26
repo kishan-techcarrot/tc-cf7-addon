@@ -150,9 +150,7 @@ class TC_CF7_Addon_Extra_Features {
 	{
 		global $wpdb;
 
-		$submission = WPCF7_Submission::get_instance();
-		$contact_form = $submission->get_contact_form();
-		$cf7_id = $contact_form->id();
+		$cf7_id = isset( $_POST['_wpcf7'] ) ? $_POST['_wpcf7'] : '';
 		$this->cf7_id = $cf7_id;
 
 		$table_name    = $wpdb->prefix.'tc_cf7_addon_email_log';
