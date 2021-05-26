@@ -172,6 +172,8 @@ class TC_CF7_Addon_Extra_Features {
 			$wpdb->insert($table_name, $logs);
 
 			$this->last_inserted_id = $wpdb->insert_id;
+
+			$this->cf7_attachments = [];
 		}
 
 		return $atts;
@@ -193,6 +195,8 @@ class TC_CF7_Addon_Extra_Features {
 			$logs['error_message'] = is_array($errors) ? implode(', ', $errors) : $errors;
 
 			$wpdb->update($table_name, $logs, ['id' => $this->last_inserted_id, 'cf7_id' => $this->cf7_id]);
+
+			$this->last_inserted_id = '';
 		}
 	}
 
