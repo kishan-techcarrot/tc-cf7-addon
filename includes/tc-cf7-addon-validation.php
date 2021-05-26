@@ -34,7 +34,7 @@ class TC_CF7_Addon_Validation {
 		add_filter( 'wpcf7_validate_radio*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
 		add_filter( 'wpcf7_validate_acceptance*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
 		add_filter( 'wpcf7_validate_quiz*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
-		//add_filter( 'wpcf7_validate_file*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
+		add_filter( 'wpcf7_validate_file*', [$this, 'tc_cf7_addon_required_message'], 9, 2 );
 
 		add_filter( 'wpcf7_validate', [$this, 'tc_cf7_addon_validate_message'], 20, 2 );
 	}
@@ -42,17 +42,41 @@ class TC_CF7_Addon_Validation {
 	public function tc_cf7_addon_required_message( $result, $tag ) 
 	{
 		$cf7_id = isset( $_POST['_wpcf7'] ) ? $_POST['_wpcf7'] : '';
-		$value = isset( $_POST[$tag->name] )
-		? trim( wp_unslash( strtr( (string) $_POST[$tag->name], "\n", " " ) ) )
-		: '';
 
-		if( $value === '' )
+		$form = WPCF7_Submission::get_instance();
+		$data = $form->get_posted_data();
+
+		if( isset( $data[$tag->name] ) && is_array($data[$tag->name]) && empty($data[$tag->name][0]) )
 		{
 			$arr_values = get_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', true );
 			$arr_values = isset( $arr_values ) ? (array) $arr_values : array();
 			$arr_values = recursive_sanitize_text_field( $arr_values );
 
-			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : 'The '. $tag->name .' field is required.';
+			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : '';
+			$message = !empty($message) ? $message : 'The '. $tag->name .' field is required.';
+
+			$result->invalidate( $tag->name, $message );
+		}
+		else if( isset( $data[$tag->name] ) && empty($data[$tag->name]) )
+		{
+			$arr_values = get_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', true );
+			$arr_values = isset( $arr_values ) ? (array) $arr_values : array();
+			$arr_values = recursive_sanitize_text_field( $arr_values );
+
+			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : '';
+			$message = !empty($message) ? $message : 'The '. $tag->name .' field is required.';
+
+			$result->invalidate( $tag->name, $message );
+		}
+
+		if( isset($_FILES[$tag->name]) && empty($_FILES[$tag->name]) )
+		{
+			$arr_values = get_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', true );
+			$arr_values = isset( $arr_values ) ? (array) $arr_values : array();
+			$arr_values = recursive_sanitize_text_field( $arr_values );
+
+			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : '';
+			$message = !empty($message) ? $message : 'The '. $tag->name .' field is required.';
 
 			$result->invalidate( $tag->name, $message );
 		}
@@ -75,7 +99,8 @@ class TC_CF7_Addon_Validation {
 				? trim( wp_unslash( strtr( (string) $_POST[$tag->name], "\n", " " ) ) )
 				: '';
 
-				$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : 'The '. $tag->name .' field is required.';
+				$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : '';
+				$message = !empty($message) ? $message : 'The '. $tag->name .' field is required.';
 				$pattern = isset($arr_values[$tag->name]['validation-pattern']) ? $arr_values[$tag->name]['validation-pattern'] : '';
 
 				if( !empty($pattern) && !preg_match($pattern, $value) )
