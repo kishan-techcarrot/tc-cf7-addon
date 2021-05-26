@@ -69,16 +69,25 @@ class TC_CF7_Addon_Validation {
 			$result->invalidate( $tag->name, $message );
 		}
 
-		if( isset($_FILES[$tag->name]) && empty($_FILES[$tag->name]) )
+		if( isset($_FILES) && !empty($_FILES) )
 		{
+			$ContactForm = WPCF7_ContactForm::get_instance( $cf7_id );
+			$form_fields = $ContactForm->scan_form_tags();
+
 			$arr_values = get_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', true );
 			$arr_values = isset( $arr_values ) ? (array) $arr_values : array();
 			$arr_values = recursive_sanitize_text_field( $arr_values );
 
-			$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : '';
-			$message = !empty($message) ? $message : 'The '. $tag->name .' field is required.';
+			foreach ($form_fields as $form_field) 
+			{
+				if( $form_field->type === 'file*' && isset($_FILES[$form_field->name]['name']) && empty($_FILES[$form_field->name]['name']) )
+				{
+					$message = isset($arr_values[$form_field->name]['validation-message']) ? $arr_values[$form_field->name]['validation-message'] : '';
+					$message = !empty($message) ? $message : 'The '. $form_field->name .' field is required.';
 
-			$result->invalidate( $tag->name, $message );
+					$result->invalidate( $form_field->name, $message );
+				}
+			}
 		}
 
 		return $result;
