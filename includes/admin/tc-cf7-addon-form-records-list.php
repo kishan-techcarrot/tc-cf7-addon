@@ -50,11 +50,14 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
 
             default:
                 $record = get_cf7_record($column_name, $item->record_id);
-                if (filter_var($record->field_value, FILTER_VALIDATE_URL)) 
-                    return '<a target="_blank" href="'.$record->field_value.'" ><span class="dashicons dashicons-media-document"></span></a>';
+
+                if(isset($record->field_value) && !empty($record->field_value))
+                    if (filter_var($record->field_value, FILTER_VALIDATE_URL)) 
+                        return '<a target="_blank" href="'.$record->field_value.'" ><span class="dashicons dashicons-media-document"></span></a>';
+                    else
+                        return $record->field_value;
                 else
-                    return $record->field_value;
-                
+                    return '';
         }
     }
 

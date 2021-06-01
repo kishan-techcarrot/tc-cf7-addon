@@ -241,10 +241,10 @@ class TC_CF7_Addon_Admin {
 						<th width="30%"><?php _e( 'Integration with 3party API', 'tc-cf7-addon' ); ?></th>
 						<td>
 							<code>
-								add_action('tc_cf7_addon_thirdparty_api_{$cf7_id}', 'tc_cf7_addon_thirdparty_api_callback_{$cf7_id}', 20, 2);
+								add_action('tc_cf7_addon_thirdparty_api_<?php echo $cf7_id; ?>', 'tc_cf7_addon_thirdparty_api_callback_<?php echo $cf7_id; ?>', 20, 2);
 								</br>
 								</br>
-								function callback_function_name($cf7, $form_data) </br>
+								function tc_cf7_addon_thirdparty_api_callback_<?php echo $cf7_id; ?>($cf7, $form_data) </br>
 								{
 									</br>&nbsp;&nbsp;&nbsp; //your code </br>
 								}

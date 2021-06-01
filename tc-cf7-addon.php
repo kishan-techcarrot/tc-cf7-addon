@@ -112,16 +112,6 @@ class TC_CF7_Addon {
 	{
 		global $wpdb;
 
-		flush_rewrite_rules();
-	}
-
-	/**
-	 * Called on plugin deactivation
-	 */
-	public function deactivation() 
-	{
-		global $wpdb;
-
 		$wpdb->hide_errors();
 
 		$collate = '';
@@ -176,6 +166,16 @@ class TC_CF7_Addon {
 
 		update_option( 'tc_cf7_addon_version', TC_CF7_ADDON_VERSION );
 
+		flush_rewrite_rules();
+	}
+
+	/**
+	 * Called on plugin deactivation
+	 */
+	public function deactivation() 
+	{
+		global $wpdb;
+		
 		flush_rewrite_rules();
 	}
 
