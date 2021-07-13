@@ -41,7 +41,7 @@ class TC_CF7_Addon_Validation {
 
 	public function tc_cf7_addon_required_message( $result, $tag ) 
 	{
-		$cf7_id = isset( $_POST['_wpcf7'] ) ? $_POST['_wpcf7'] : '';
+		$cf7_id = isset( $_POST['_wpcf7'] ) ? sanitize_text_field($_POST['_wpcf7']) : '';
 
 		$form = WPCF7_Submission::get_instance();
 		$data = $form->get_posted_data();
@@ -95,7 +95,7 @@ class TC_CF7_Addon_Validation {
 
 	public function tc_cf7_addon_validate_message( $result, $tags ) 
 	{
-		$cf7_id = isset( $_POST['_wpcf7'] ) ? $_POST['_wpcf7'] : '';
+		$cf7_id = isset( $_POST['_wpcf7'] ) ? sanitize_text_field($_POST['_wpcf7']) : '';
 		$arr_values = get_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', true );
 		$arr_values = isset( $arr_values ) ? (array) $arr_values : array();
 		$arr_values = recursive_sanitize_text_field( $arr_values );
@@ -105,7 +105,7 @@ class TC_CF7_Addon_Validation {
 			if( isset($arr_values[$tag->name]['validation-pattern']) && !empty($arr_values[$tag->name]['validation-pattern']) )
 			{
 				$value = isset( $_POST[$tag->name] )
-				? trim( wp_unslash( strtr( (string) $_POST[$tag->name], "\n", " " ) ) )
+				? trim( wp_unslash( strtr( (string) sanitize_text_field($_POST[$tag->name]), "\n", " " ) ) )
 				: '';
 
 				$message = isset($arr_values[$tag->name]['validation-message']) ? $arr_values[$tag->name]['validation-message'] : '';

@@ -21,18 +21,20 @@ function recursive_sanitize_text_field($array)
 	return $array;
 }
 
+/**
+ * get cf7 form records count
+ * @param $cf7_id
+ * @return mixed
+ */
 function get_cf7_records_count($cf7_id = '') 
 {
 	global $wpdb;
 
-	$query = "SELECT COUNT(*) AS `totals` FROM %1s 
-			WHERE cf7_id = %s 
-			GROUP BY `record_id` 
-			ORDER BY `record_id`
-			";
-
 	$records = $wpdb->get_col( $wpdb->prepare( 
-                        $query, 
+                        "SELECT COUNT(*) AS `totals` FROM %1s 
+                        WHERE cf7_id = %s 
+                        GROUP BY `record_id` 
+                        ORDER BY `record_id`", 
                         $wpdb->prefix . 'tc_cf7_addon_form_data',
                         $cf7_id
                 ) );
@@ -47,18 +49,20 @@ function get_cf7_records_count($cf7_id = '')
     }
 }
 
+/**
+ * get cf7 form fields
+ * @param $cf7_id
+ * @return mixed
+ */
 function get_cf7_fields($cf7_id = '') 
 {
 	global $wpdb;
 
-	$query = "SELECT `field_name` FROM %1s 
-			WHERE cf7_id = %s 
-			GROUP BY `field_name` 
-			ORDER BY `id`
-			";
-
 	$fields = $wpdb->get_col( $wpdb->prepare( 
-                        $query, 
+                        "SELECT `field_name` FROM %1s 
+                        WHERE cf7_id = %s 
+                        GROUP BY `field_name` 
+                        ORDER BY `id`", 
                         $wpdb->prefix . 'tc_cf7_addon_form_data',
                         $cf7_id
                 ) );
@@ -82,17 +86,19 @@ function get_cf7_fields($cf7_id = '')
     }
 }
 
+/**
+ * get cf7 form single record
+ * @param $field_name, $record_id
+ * @return mixed
+ */
 function get_cf7_record($field_name = '', $record_id = '') 
 {
     global $wpdb;
 
-    $query = "SELECT * FROM %1s 
-            WHERE field_name = %s AND record_id = %s 
-            ORDER BY `id`
-            ";
-
     $record = $wpdb->get_row( $wpdb->prepare( 
-                        $query, 
+                        "SELECT * FROM %1s 
+                        WHERE field_name = %s AND record_id = %s 
+                        ORDER BY `id`", 
                         $wpdb->prefix . 'tc_cf7_addon_form_data',
                         $field_name,
                         $record_id
@@ -108,6 +114,11 @@ function get_cf7_record($field_name = '', $record_id = '')
     }
 }
 
+/**
+ * get cf7 email log
+ * @param $id
+ * @return mixed
+ */
 function get_cf7_email_log($id = '') 
 {
     global $wpdb;
@@ -118,22 +129,21 @@ function get_cf7_email_log($id = '')
         $where .= ' AND id IN ('. $id .')';
     }
 
-    $query = "SELECT * FROM %1s 
-            $where
-            ORDER BY `id`
-            ";
-
     if ( isset($id) && !empty($id) ) 
     {
         $logs = $wpdb->get_row( $wpdb->prepare( 
-                        $query, 
+                        "SELECT * FROM %1s 
+                        $where
+                        ORDER BY `id`", 
                         $wpdb->prefix . 'tc_cf7_addon_email_log'
                 ) );
     }
     else
     {
         $logs = $wpdb->get_results( $wpdb->prepare( 
-                        $query, 
+                        "SELECT * FROM %1s 
+                        $where
+                        ORDER BY `id`", 
                         $wpdb->prefix . 'tc_cf7_addon_email_log'
                 ) );
     }
@@ -146,4 +156,23 @@ function get_cf7_email_log($id = '')
     {
         return false;
     }
+}
+
+function tc_cf7_get_user_ip_address()
+{
+    if( isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP']) )
+    {
+        //ip from share internet
+        $ip = sanitize_text_field($_SERVER['HTTP_CLIENT_IP']);
+    }
+    elseif( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) )
+    {
+        //ip pass from proxy
+        $ip = sanitize_text_field($_SERVER['HTTP_X_FORWARDED_FOR']);
+    }
+    else
+    {
+        $ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '';
+    }
+    return $ip;
 }

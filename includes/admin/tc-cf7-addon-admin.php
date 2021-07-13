@@ -55,7 +55,7 @@ class TC_CF7_Addon_Admin {
 
     public function tc_cf7_addon_form_records_list()
     {
-    	$cf7_id = isset($_REQUEST['cf7_id']) ? $_REQUEST['cf7_id'] : '';
+    	$cf7_id = isset($_REQUEST['cf7_id']) ? sanitize_text_field($_REQUEST['cf7_id']) : '';
 
     	if(!empty($cf7_id))
     	{
@@ -63,7 +63,7 @@ class TC_CF7_Addon_Admin {
 	        $tc_cf7_addon_form_records_list->prepare_items();
 	    	?>
 	    	<div class="wrap">
-	            <h2><?php _e( 'Contact Form Records List', 'tc-cf7-addon' ); ?></h2>
+	            <h2><?php esc_html_e( 'Contact Form Records List', 'tc-cf7-addon' ); ?></h2>
 
 	            <form id="tc_cf7_addon_form_records_list" method="post">
 	            <?php
@@ -79,7 +79,7 @@ class TC_CF7_Addon_Admin {
 	        $cf7_forms_list->prepare_items();
 	    	?>
 	    	<div class="wrap">
-	            <h2><?php _e( 'Contact Forms List', 'tc-cf7-addon' ); ?></h2>
+	            <h2><?php esc_html_e( 'Contact Forms List', 'tc-cf7-addon' ); ?></h2>
 
 	            <?php
 	                $cf7_forms_list->display();
@@ -95,7 +95,7 @@ class TC_CF7_Addon_Admin {
         $tc_cf7_addon_email_log->prepare_items();
     	?>
     	<div class="wrap">
-            <h2><?php _e( 'Email Log', 'tc-cf7-addon' ); ?></h2>
+            <h2><?php esc_html_e( 'Email Log', 'tc-cf7-addon' ); ?></h2>
 
             <form id="tc_cf7_addon_email_log" method="post">
             <?php
@@ -123,7 +123,7 @@ class TC_CF7_Addon_Admin {
 	{
 		wp_nonce_field( 'tc_cf7_addon_save_data_security', 'tc_cf7_addon_save_data_nonce' );
 		?>
-		<h2><?php _e( 'Custom Validation', 'tc-cf7-addon' ); ?></h2>
+		<h2><?php esc_html_e( 'Custom Validation', 'tc-cf7-addon' ); ?></h2>
 
 		<fieldset>
 			<?php
@@ -147,9 +147,9 @@ class TC_CF7_Addon_Admin {
 			<table class="form-table">
 				<thead>
 					<tr>
-						<th scope="row" width="30%"><?php _e( 'Your field', 'tc-cf7-addon' ); ?></th>
-						<td width="35%"><?php _e( 'Field validation message', 'tc-cf7-addon' ); ?></td>
-						<td width="35%"><?php _e( '/^[A-Za-z. ]+$/', 'tc-cf7-addon' ); ?></td>
+						<th scope="row" width="30%"><?php esc_html_e( 'Your field', 'tc-cf7-addon' ); ?></th>
+						<td width="35%"><?php esc_html_e( 'Field validation message', 'tc-cf7-addon' ); ?></td>
+						<td width="35%"><?php esc_html_e( '/^[A-Za-z. ]+$/', 'tc-cf7-addon' ); ?></td>
 					</tr>
 				</thead>
 				<tbody>
@@ -169,27 +169,27 @@ class TC_CF7_Addon_Admin {
 							<?php elseif( $cf7_field->basetype === 'email' ) : ?>
 								<tr>
 									<th scope="row">
-										<label for="field-<?php echo $cf7_field->name.'-validation'; ?>"><?php echo $cf7_field->name.' (Wrong Email)'; ?></label>
+										<label for="field-<?php echo esc_attr($cf7_field->name).'-validation'; ?>"><?php echo esc_html($cf7_field->name).' (Wrong Email)'; ?></label>
 									</th>
 									<td>
-										<input type="text" id="field-<?php echo $cf7_field->name.'-validation-message'; ?>" name="tc-cf7-addon-validation[<?php echo $cf7_field->name.'][validation-message]'; ?>" class="regular-text" size="70" value="<?php echo $validation_message; ?>">
+										<input type="text" id="field-<?php echo esc_attr($cf7_field->name).'-validation-message'; ?>" name="tc-cf7-addon-validation[<?php echo esc_attr($cf7_field->name).'][validation-message]'; ?>" class="regular-text" size="70" value="<?php echo esc_attr($validation_message); ?>">
 									</td>
 									<td>
-										<input type="text" id="field-<?php echo $cf7_field->name.'-validation-pattern'; ?>" name="tc-cf7-addon-validation[<?php echo $cf7_field->name.'][validation-pattern]'; ?>" class="regular-text" size="70" value="<?php echo $validation_pattern; ?>">
+										<input type="text" id="field-<?php echo esc_attr($cf7_field->name).'-validation-pattern'; ?>" name="tc-cf7-addon-validation[<?php echo esc_attr($cf7_field->name).'][validation-pattern]'; ?>" class="regular-text" size="70" value="<?php echo esc_attr($validation_pattern); ?>">
 									</td>
 								</tr>
 							
 							<?php else : ?>
 								<tr>
 									<th scope="row">
-										<label for="field-<?php echo $cf7_field->name.'-validation'; ?>"><?php echo $cf7_field->name.''; ?></label>
+										<label for="field-<?php echo esc_attr($cf7_field->name).'-validation'; ?>"><?php echo esc_html($cf7_field->name).''; ?></label>
 									</th>
 									<td>
-										<input type="text" id="field-<?php echo $cf7_field->name.'-validation-message'; ?>" name="tc-cf7-addon-validation[<?php echo $cf7_field->name.'][validation-message]'; ?>" class="regular-text" size="70" value="<?php echo $validation_message; ?>">
+										<input type="text" id="field-<?php echo esc_attr($cf7_field->name).'-validation-message'; ?>" name="tc-cf7-addon-validation[<?php echo esc_attr($cf7_field->name).'][validation-message]'; ?>" class="regular-text" size="70" value="<?php echo esc_attr($validation_message); ?>">
 									</td>
 									<td>
 										<?php if( in_array($cf7_field->basetype, ['text', 'email', 'tel', 'number', 'range']) ) : ?>
-											<input type="text" id="field-<?php echo $cf7_field->name.'-validation-pattern'; ?>" name="tc-cf7-addon-validation[<?php echo $cf7_field->name.'][validation-pattern]'; ?>" class="regular-text" size="70" value="<?php echo $validation_pattern; ?>">
+											<input type="text" id="field-<?php echo esc_attr($cf7_field->name).'-validation-pattern'; ?>" name="tc-cf7-addon-validation[<?php echo esc_attr($cf7_field->name).'][validation-pattern]'; ?>" class="regular-text" size="70" value="<?php echo esc_attr($validation_pattern); ?>">
 										<?php endif; ?>
 									</td>
 								</tr>
@@ -215,30 +215,30 @@ class TC_CF7_Addon_Admin {
 		$save_email_log = get_post_meta( $cf7_id, '_tc_cf7_addon_save_email_log', true );
 		$save_form_data = get_post_meta( $cf7_id, '_tc_cf7_addon_save_form_data', true );
 		?>
-		<h2><?php _e( 'Extra Features', 'tc-cf7-addon' ); ?></h2>
+		<h2><?php esc_html_e( 'Extra Features', 'tc-cf7-addon' ); ?></h2>
 
 		<fieldset>
 			<table class="form-table">
 				<tbody>
 					<tr>
-						<th width="30%"><?php _e( 'Skip Send Email', 'tc-cf7-addon' ); ?></th>
+						<th width="30%"><?php esc_html_e( 'Skip Send Email', 'tc-cf7-addon' ); ?></th>
 						<td><input type="checkbox" name="tc-cf7-addon-skip-mail" value="1" <?php echo checked($skip_mail, 1); ?> /> </br>
-							<small><?php _e('If you are not send mail then checked.', 'tc-cf7-addon' ); ?></small></td>
+							<small><?php esc_html_e('If you are not send mail then checked.', 'tc-cf7-addon' ); ?></small></td>
 					</tr>
 					<tr>
-						<th width="30%"><?php _e( 'Save Email Log', 'tc-cf7-addon' ); ?></th>
+						<th width="30%"><?php esc_html_e( 'Save Email Log', 'tc-cf7-addon' ); ?></th>
 						<td><input type="checkbox" name="tc-cf7-addon-save-email-log" value="1" <?php echo checked($save_email_log, 1); ?> /></br>
-							<small><?php _e('If you are save email log in database then checked.', 'tc-cf7-addon' ); ?></small></td>
+							<small><?php esc_html_e('If you are save email log in database then checked.', 'tc-cf7-addon' ); ?></small></td>
 						</td>
 					</tr>
 					<tr>
-						<th width="30%"><?php _e( 'Save in Database', 'tc-cf7-addon' ); ?></th>
+						<th width="30%"><?php esc_html_e( 'Save in Database', 'tc-cf7-addon' ); ?></th>
 						<td><input type="checkbox" name="tc-cf7-addon-save-form_data" value="1" <?php echo checked($save_form_data, 1); ?> /></br>
-							<small><?php _e('If you are save records in database then checked.', 'tc-cf7-addon' ); ?></small></td>
+							<small><?php esc_html_e('If you are save records in database then checked.', 'tc-cf7-addon' ); ?></small></td>
 						</td>
 					</tr>
 					<tr>
-						<th width="30%"><?php _e( 'Integration with 3party API', 'tc-cf7-addon' ); ?></th>
+						<th width="30%"><?php esc_html_e( 'Integration with 3party API', 'tc-cf7-addon' ); ?></th>
 						<td>
 							<code>
 								add_action('tc_cf7_addon_thirdparty_api_<?php echo $cf7_id; ?>', 'tc_cf7_addon_thirdparty_api_callback_<?php echo $cf7_id; ?>', 20, 2);
@@ -265,7 +265,7 @@ class TC_CF7_Addon_Admin {
 		if( isset($_POST['page']) && $_POST['page'] !== 'wpcf7' )
 			return;
 
-		if (!wp_verify_nonce( sanitize_text_field($_POST['tc_cf7_addon_save_data_nonce']), 'tc_cf7_addon_save_data_security' ) )
+		if ( isset($_POST['tc_cf7_addon_save_data_nonce']) && !empty($_POST['tc_cf7_addon_save_data_nonce']) && !wp_verify_nonce( sanitize_text_field($_POST['tc_cf7_addon_save_data_nonce']), 'tc_cf7_addon_save_data_security' ) )
 			return;
 
 		$cf7_id = $cf7->id();
@@ -277,13 +277,13 @@ class TC_CF7_Addon_Admin {
 			update_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', $arr_values );
 		}
 
-		$skip_mail = isset($_POST['tc-cf7-addon-skip-mail']) ? $_POST['tc-cf7-addon-skip-mail'] : '';
+		$skip_mail = isset($_POST['tc-cf7-addon-skip-mail']) ? sanitize_text_field($_POST['tc-cf7-addon-skip-mail']) : '';
 		update_post_meta( $cf7_id, '_tc_cf7_addon_skip_mail', $skip_mail );
 
-		$save_email_log = isset($_POST['tc-cf7-addon-save-email-log']) ? $_POST['tc-cf7-addon-save-email-log'] : '';
+		$save_email_log = isset($_POST['tc-cf7-addon-save-email-log']) ? sanitize_text_field($_POST['tc-cf7-addon-save-email-log']) : '';
 		update_post_meta( $cf7_id, '_tc_cf7_addon_save_email_log', $save_email_log );
 
-		$save_form_data = isset($_POST['tc-cf7-addon-save-form_data']) ? $_POST['tc-cf7-addon-save-form_data'] : '';
+		$save_form_data = isset($_POST['tc-cf7-addon-save-form_data']) ? sanitize_text_field($_POST['tc-cf7-addon-save-form_data']) : '';
 		update_post_meta( $cf7_id, '_tc_cf7_addon_save_form_data', $save_form_data );
 	}
 

@@ -105,13 +105,25 @@ class TC_CF7_Addon_Forms_List extends WP_List_Table {
         /**
          * Get items
          */
-        $max = $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->prefix}posts $where ORDER BY {$orderby} {$order};" );
-        
-        $this->items = $wpdb->get_results( $wpdb->prepare( "
-            SELECT * FROM {$wpdb->prefix}posts
-            $where
-            ORDER BY `{$orderby}` {$order} LIMIT %d, %d
-        ", ( $current_page - 1 ) * $per_page, $per_page ) );
+        $max = $wpdb->get_var( 
+            $wpdb->prepare("SELECT COUNT(ID) FROM %1s 
+                $where 
+                ORDER BY %1s %1s ", 
+                $wpdb->prefix . 'posts', 
+                $orderby, 
+                $order) 
+        );
+
+        $this->items = $wpdb->get_results( 
+            $wpdb->prepare("SELECT * FROM %1s 
+                $where 
+                ORDER BY %1s %1s LIMIT %d, %d ", 
+                $wpdb->prefix . 'posts', 
+                $orderby, 
+                $order,
+                ( $current_page - 1 ) * $per_page, 
+                $per_page )
+        );
 
         /**
          * Pagination

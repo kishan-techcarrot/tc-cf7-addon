@@ -129,7 +129,7 @@ class TC_CF7_Addon_Extra_Features {
 	        		$logs['cf7_id'] = $cf7_id;
 	        		$logs['record_id'] = $record_id;
 	        		$logs['field_name'] = $key;
-	        		$logs['field_value'] = is_array($value) ? json_encode($value) : $value;
+	        		$logs['field_value'] = is_array($value) ? wp_json_encode($value) : $value;
 
 	        		$wpdb->insert($table_name, $logs);
 	        	}
@@ -150,7 +150,7 @@ class TC_CF7_Addon_Extra_Features {
 	{
 		global $wpdb;
 
-		$cf7_id = isset( $_POST['_wpcf7'] ) ? $_POST['_wpcf7'] : '';
+		$cf7_id = isset( $_POST['_wpcf7'] ) ? sanitize_text_field($_POST['_wpcf7']) : '';
 		$this->cf7_id = $cf7_id;
 
 		$table_name    = $wpdb->prefix.'tc_cf7_addon_email_log';
@@ -164,8 +164,8 @@ class TC_CF7_Addon_Extra_Features {
 			$logs['email_subject'] = $atts['subject'];
 			$logs['email_message'] = $atts['message'];
 			$logs['email_headers'] = $atts['headers'];
-			$logs['email_attachments'] = is_array($this->cf7_attachments) && !empty($this->cf7_attachments) ? json_encode($this->cf7_attachments) : '';
-			$logs['ip_address'] = $_SERVER['REMOTE_ADDR'];
+			$logs['email_attachments'] = is_array($this->cf7_attachments) && !empty($this->cf7_attachments) ? wp_json_encode($this->cf7_attachments) : '';
+			$logs['ip_address'] = tc_cf7_get_user_ip_address();
 			$logs['is_sent'] = 1;
 			$logs['sent_date'] = current_time('Y-m-d H:i:s');
 

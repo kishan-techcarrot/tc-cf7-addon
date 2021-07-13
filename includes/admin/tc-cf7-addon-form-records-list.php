@@ -81,7 +81,7 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
      */
     public function get_columns()
     {
-        $cf7_id = isset($_REQUEST['cf7_id']) ? $_REQUEST['cf7_id'] : '';
+        $cf7_id = isset($_REQUEST['cf7_id']) ? sanitize_text_field($_REQUEST['cf7_id']) : '';
 
         return get_cf7_fields($cf7_id);
     }
@@ -110,8 +110,8 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
             switch ( $this->current_action() ) {
                 case 'delete' :
                     $ids = implode( "','", $items );
-                    $wpdb->query( "DELETE FROM {$wpdb->prefix}tc_cf7_addon_form_data WHERE record_id IN('$ids')" );
-                    echo '<div class="updated"><p>' . sprintf( __( '%d record deleted', 'tc-cf7-addon' ), sizeof( $items ) ) . '</p></div>';
+                    $wpdb->query( $wpdb->prepare("DELETE FROM %1s WHERE record_id IN('%1s')", $wpdb->prefix . 'tc_cf7_addon_form_data', $ids) );
+                    echo '<div class="updated"><p>' . esc_html(sizeof($items)) . ' record deleted' . '</p></div>';
                 break;
             }
         }
@@ -130,7 +130,7 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
         $per_page       = 20;
         $orderby        = ! empty( $_REQUEST['orderby'] ) ? sanitize_text_field( $_REQUEST['orderby'] ) : 'id';
         $order          = ! empty( $_REQUEST['order'] ) &&  ( $_REQUEST['order'] === 'asc' ) ? 'ASC' : 'DESC';
-        $cf7_id         = isset($_REQUEST['cf7_id']) ? $_REQUEST['cf7_id'] : '';
+        $cf7_id         = isset($_REQUEST['cf7_id']) ? sanitize_text_field($_REQUEST['cf7_id']) : '';
 
         /**
          * Init column headers
@@ -153,14 +153,29 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
         /**
          * Get items
          */
-        $max = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->prefix}tc_cf7_addon_form_data $where $group_by ORDER BY {$orderby} {$order};" );
-        
-        $this->items = $wpdb->get_results( $wpdb->prepare( "
-            SELECT `record_id` FROM {$wpdb->prefix}tc_cf7_addon_form_data
-            $where 
-            $group_by 
-            ORDER BY `{$orderby}` {$order} LIMIT %d, %d
-        ", ( $current_page - 1 ) * $per_page, $per_page ) );
+        $max = $wpdb->get_var( 
+            $wpdb->prepare("SELECT COUNT(id) FROM %1s 
+                $where 
+                %1s 
+                ORDER BY %1s %1s ", 
+                $wpdb->prefix . 'tc_cf7_addon_form_data', 
+                $group_by, 
+                $orderby, 
+                $order) 
+        );
+
+        $this->items = $wpdb->get_results( 
+            $wpdb->prepare("SELECT record_id FROM %1s 
+                $where 
+                %1s 
+                ORDER BY %1s %1s LIMIT %d, %d ", 
+                $wpdb->prefix . 'tc_cf7_addon_form_data', 
+                $group_by, 
+                $orderby, 
+                $order,
+                ( $current_page - 1 ) * $per_page, 
+                $per_page )
+        );
 
         /**
          * Pagination

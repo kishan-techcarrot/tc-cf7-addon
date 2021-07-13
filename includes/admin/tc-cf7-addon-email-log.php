@@ -111,8 +111,8 @@ class TC_CF7_Addon_Email_Log extends WP_List_Table {
             switch ( $this->current_action() ) {
                 case 'delete' :
                     $ids = implode( "','", $items );
-                    $wpdb->query( "DELETE FROM {$wpdb->prefix}tc_cf7_addon_email_log WHERE id IN('$ids')" );
-                    echo '<div class="updated"><p>' . sprintf( __( '%d email log deleted', 'tc-cf7-addon' ), sizeof( $items ) ) . '</p></div>';
+                    $wpdb->query( $wpdb->prepare("DELETE FROM %1s WHERE id IN('%1s')", $wpdb->prefix . 'tc_cf7_addon_email_log', $ids) );
+                    echo '<div class="updated"><p>' . esc_html(sizeof($items)) . ' email log deleted' . '</p></div>';
                 break;
             }
         }
@@ -149,13 +149,25 @@ class TC_CF7_Addon_Email_Log extends WP_List_Table {
         /**
          * Get items
          */
-        $max = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->prefix}tc_cf7_addon_email_log $where ORDER BY {$orderby} {$order};" );
-        
-        $this->items = $wpdb->get_results( $wpdb->prepare( "
-            SELECT * FROM {$wpdb->prefix}tc_cf7_addon_email_log
-            $where 
-            ORDER BY `{$orderby}` {$order} LIMIT %d, %d
-        ", ( $current_page - 1 ) * $per_page, $per_page ) );
+        $max = $wpdb->get_var( 
+            $wpdb->prepare("SELECT COUNT(id) FROM %1s 
+                $where 
+                ORDER BY %1s %1s ", 
+                $wpdb->prefix . 'tc_cf7_addon_email_log', 
+                $orderby, 
+                $order) 
+        );
+
+        $this->items = $wpdb->get_results( 
+            $wpdb->prepare("SELECT * FROM %1s 
+                $where 
+                ORDER BY %1s %1s LIMIT %d, %d ", 
+                $wpdb->prefix . 'tc_cf7_addon_email_log', 
+                $orderby, 
+                $order,
+                ( $current_page - 1 ) * $per_page, 
+                $per_page )
+        );
 
         /**
          * Pagination
@@ -188,7 +200,7 @@ function email_log_thickbox_model_view()
 {
     global $wpdb;
 
-    $log_id  = isset($_REQUEST['log_id']) ? $_REQUEST['log_id'] : '';
+    $log_id  = isset($_REQUEST['log_id']) ? sanitize_text_field($_REQUEST['log_id']) : '';
 
     ob_start();
 
@@ -200,23 +212,23 @@ function email_log_thickbox_model_view()
 
             <table style="width: 100%;">
                 <tr style="background: #eee;">
-                    <td style="padding: 5px;"><?php _e( 'Sent at', 'tc-cf7-addon' ); ?>:</td>
+                    <td style="padding: 5px;"><?php esc_html_e( 'Sent at', 'tc-cf7-addon' ); ?>:</td>
                     <td style="padding: 5px;"><?php echo esc_html( $log->sent_date ); ?></td>
                 </tr>
                 <tr style="background: #eee;">
-                    <td style="padding: 5px;"><?php _e( 'To', 'tc-cf7-addon' ); ?>:</td>
+                    <td style="padding: 5px;"><?php esc_html_e( 'To', 'tc-cf7-addon' ); ?>:</td>
                     <td style="padding: 5px;"><?php echo esc_html( $log->email_to); ?></td>
                 </tr>
                 <tr style="background: #eee;">
-                    <td style="padding: 5px;"><?php _e( 'Subject', 'tc-cf7-addon' ); ?>:</td>
+                    <td style="padding: 5px;"><?php esc_html_e( 'Subject', 'tc-cf7-addon' ); ?>:</td>
                     <td style="padding: 5px;"><?php echo esc_html( $log->email_subject ); ?></td>
                 </tr>
                 <tr style="background: #eee;">
-                    <td style="padding: 5px;"><?php _e( 'Header', 'tc-cf7-addon' ); ?>:</td>
+                    <td style="padding: 5px;"><?php esc_html_e( 'Header', 'tc-cf7-addon' ); ?>:</td>
                     <td style="padding: 5px;"><pre class="tabs_text-pre"><?php echo esc_textarea( $log->email_headers ); ?></pre></td>
                 </tr>
                 <tr style="background: #eee;">
-                    <td style="padding: 5px;"><?php _e( 'Attachments', 'tc-cf7-addon' ); ?>:</td>
+                    <td style="padding: 5px;"><?php esc_html_e( 'Attachments', 'tc-cf7-addon' ); ?>:</td>
 
                     <?php if(!empty($log->email_attachments)) : ?>
                         <td style="padding: 5px;">
@@ -227,9 +239,9 @@ function email_log_thickbox_model_view()
 
                                 <?php if(!empty($attachments)) : ?>
                                     <p>
-                                        <b><?php echo $field_name; ?></b> :: 
+                                        <b><?php echo esc_html($field_name); ?></b> :: 
                                         <?php foreach($attachments as $attachment) : ?>
-                                            <a target="_blank" href="<?php echo $attachment; ?>"><span class="dashicons dashicons-media-document"></span></a>
+                                            <a target="_blank" href="<?php echo esc_url($attachment); ?>"><span class="dashicons dashicons-media-document"></span></a>
                                         <?php endforeach; ?>
                                     </p>
 
@@ -251,8 +263,8 @@ function email_log_thickbox_model_view()
             </table>
 
             <h2 class="nav-tab-wrapper">
-                <a href="#tabs_text" class="nav-tab nav-tab-active"><?php _e('Raw Email Content', 'tc-cf7-addon'); ?></a>
-                <a href="#tabs_preview" class="nav-tab"><?php _e('Preview Content as HTML', 'tc-cf7-addon'); ?></a>           
+                <a href="#tabs_text" class="nav-tab nav-tab-active"><?php esc_html_e('Raw Email Content', 'tc-cf7-addon'); ?></a>
+                <a href="#tabs_preview" class="nav-tab"><?php esc_html_e('Preview Content as HTML', 'tc-cf7-addon'); ?></a>           
             </h2>
             
             <div class="white-background">
