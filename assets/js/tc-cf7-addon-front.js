@@ -3,41 +3,37 @@ var tcCF7AddonFront = function () {
     return {
         init: function () 
         {
-            
-
-            if( jQuery('form.wpcf7-form').length > 0 )
+            if (jQuery('.wpcf7').length > 0)
             {
-                //document.addEventListener('wpcf7mailfailed', tcCF7AddonFront.actions.tcCf7MailFailed);
-                //document.addEventListener('wpcf7mailsent ', tcCF7AddonFront.actions.tcCf7MailSent);
+                var wpcf7Elm = document.querySelector( '.wpcf7' );
+                wpcf7Elm.addEventListener( 'wpcf7mailsent', function( event ) {
+                  tcCF7AddonFront.actions.tcCf7MailSent(event);
+                }, false );
             }
         },
 
-    	actions:
+        actions:
         {
-            tcCf7MailFailed: function(event) 
+            tcCf7MailSent: function(event) 
             {
-                console.log(event);
-
                 var fields = event.detail.inputs;
                 jQuery.ajax({
                     url: tc_cf7_addon.ajax_url,
                     type: 'POST',
-                    dataType: 'JSON',
+                    dataType: 'HTML',
                     data: {
-                        action: 'tc_cf7_addon_update_mail_status',
-                        form_id: event.detail.contactFormId,
-                        mail_status: 'failed',
+                        action: 'tc_cf7_addon_mail_sent',
+                        cf7_id: event.detail.contactFormId,
                         security: tc_cf7_addon.tc_cf7_addon_security,
                     },
                     success: function (responce)
                     {
+                        if(responce != '')
+                        {
+                            window.location.replace(responce);
+                        }
                     }
                 });
-            },
-
-            tcCf7MailSent: function(event) 
-            {
-                
             },
         }
     }

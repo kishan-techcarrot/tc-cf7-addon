@@ -211,6 +211,7 @@ class TC_CF7_Addon_Admin {
 		wp_nonce_field( 'tc_cf7_addon_save_data_security', 'tc_cf7_addon_save_data_nonce' );
 
 		$cf7_id     = $post->id();
+		$thankyou_page_url = get_post_meta( $cf7_id, '_tc_cf7_addon_thankyou_page_url', true );
 		$skip_mail = get_post_meta( $cf7_id, '_tc_cf7_addon_skip_mail', true );
 		$save_email_log = get_post_meta( $cf7_id, '_tc_cf7_addon_save_email_log', true );
 		$save_form_data = get_post_meta( $cf7_id, '_tc_cf7_addon_save_form_data', true );
@@ -220,6 +221,11 @@ class TC_CF7_Addon_Admin {
 		<fieldset>
 			<table class="form-table">
 				<tbody>
+					<tr>
+						<th width="30%"><?php esc_html_e( 'Thank you page URL', 'tc-cf7-addon' ); ?></th>
+						<td><input type="text" class="regular-text" name="tc-cf7-addon-thankyou-page-url" value="<?php echo esc_attr($thankyou_page_url); ?>" /> </br>
+							<small><?php esc_html_e('If you redirect thank you page then add than you page link.', 'tc-cf7-addon' ); ?></small></td>
+					</tr>
 					<tr>
 						<th width="30%"><?php esc_html_e( 'Skip Send Email', 'tc-cf7-addon' ); ?></th>
 						<td><input type="checkbox" name="tc-cf7-addon-skip-mail" value="1" <?php echo checked($skip_mail, 1); ?> /> </br>
@@ -276,6 +282,9 @@ class TC_CF7_Addon_Admin {
 
 			update_post_meta( $cf7_id, '_tc_cf7_addon_custom_validation', $arr_values );
 		}
+
+		$thankyou_page_url = isset($_POST['tc-cf7-addon-thankyou-page-url']) ? sanitize_text_field($_POST['tc-cf7-addon-thankyou-page-url']) : '';
+		update_post_meta( $cf7_id, '_tc_cf7_addon_thankyou_page_url', $thankyou_page_url );
 
 		$skip_mail = isset($_POST['tc-cf7-addon-skip-mail']) ? sanitize_text_field($_POST['tc-cf7-addon-skip-mail']) : '';
 		update_post_meta( $cf7_id, '_tc_cf7_addon_skip_mail', $skip_mail );

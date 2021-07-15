@@ -273,7 +273,7 @@ function email_log_thickbox_model_view()
                 </div>
 
                 <div id="tabs_preview" class="settings-panel" style="display: none;">
-                   <?php echo nl2br( $log->email_message ); ?>
+                   <?php echo wp_kses( $log->email_message, el_kses_allowed_html( 'post' ) ); ?>
                 </div>
             </div>
         </div>

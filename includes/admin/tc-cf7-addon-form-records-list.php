@@ -153,7 +153,7 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
         /**
          * Get items
          */
-        $max = $wpdb->get_var( 
+        $wpdb->get_var( 
             $wpdb->prepare("SELECT COUNT(id) FROM %1s 
                 $where 
                 %1s 
@@ -163,6 +163,8 @@ class TC_CF7_Addon_Form_Records_List extends WP_List_Table {
                 $orderby, 
                 $order) 
         );
+
+        $max = $wpdb->num_rows;
 
         $this->items = $wpdb->get_results( 
             $wpdb->prepare("SELECT record_id FROM %1s 

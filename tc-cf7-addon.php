@@ -91,7 +91,7 @@ class TC_CF7_Addon {
 			include_once TC_CF7_ADDON_PLUGIN_DIR . '/includes/admin/tc-cf7-addon-admin.php';
 		}
 		
-		include_once( 'tc-cf7-addon-functions.php' );
+		include_once( TC_CF7_ADDON_PLUGIN_DIR . '/tc-cf7-addon-functions.php' );
 		include_once( TC_CF7_ADDON_PLUGIN_DIR . '/includes/tc-cf7-addon-validation.php' );
 		include_once( TC_CF7_ADDON_PLUGIN_DIR . '/includes/tc-cf7-addon-extra-features.php' );
 
@@ -102,7 +102,7 @@ class TC_CF7_Addon {
 
 		// Actions
 		add_action( 'after_setup_theme', array( $this, 'load_plugin_textdomain' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 11 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 12 );
 	}
 
 	/**
@@ -211,7 +211,14 @@ class TC_CF7_Addon {
 	 */
 	public function frontend_scripts() 
 	{
-		
+		wp_register_script( 'tc-cf7-addon-front', TC_CF7_ADDON_PLUGIN_URL . '/assets/js/tc-cf7-addon-front.js', array( 'jquery' ), time(), true );
+
+		wp_localize_script( 'tc-cf7-addon-front', 'tc_cf7_addon', array(
+			'ajax_url' 	 => admin_url( 'admin-ajax.php' ),
+			'tc_cf7_addon_security'  => wp_create_nonce( '_nonce_tc_cf7_addon_security' ),
+		) );
+
+		wp_enqueue_script( 'tc-cf7-addon-front' );
 	}
 
 }

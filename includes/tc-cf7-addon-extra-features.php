@@ -33,6 +33,9 @@ class TC_CF7_Addon_Extra_Features {
 		add_filter('wp_mail', [$this, 'tc_cf7_addon_save_email_log'], 10);
 
 		add_action( 'wp_mail_failed', array( $this, 'tc_cf7_addon_update_mail_status' ) );
+
+		add_action( 'wp_ajax_tc_cf7_addon_mail_sent', array( $this, 'tc_cf7_addon_mail_sent' ) );
+		add_action( 'wp_ajax_nopriv_tc_cf7_addon_mail_sent', array( $this, 'tc_cf7_addon_mail_sent' ) );
 	}
 
 	public function tc_cf7_addon_skip_mail($skip_mail, $cf7)
@@ -198,6 +201,18 @@ class TC_CF7_Addon_Extra_Features {
 
 			$this->last_inserted_id = '';
 		}
+	}
+
+	public function tc_cf7_addon_mail_sent()
+	{
+		check_ajax_referer( '_nonce_tc_cf7_addon_security', 'security' );
+
+		$cf7_id = isset($_REQUEST['cf7_id']) ? sanitize_text_field($_REQUEST['cf7_id']) : '';
+
+		$thankyou_page_url = get_post_meta( $cf7_id, '_tc_cf7_addon_thankyou_page_url', true );
+
+		print($thankyou_page_url);
+		wp_die();
 	}
 
 }
